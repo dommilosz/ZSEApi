@@ -62,7 +62,7 @@ app.get("/api/zastepstwa", async (req: Request, res: Response) => {
         zastepstwa.informations = informations;
 
         return zastepstwa;
-    })
+    }, undefined,"iso-8859-2")
 
     res.writeHead(200, {"Content-Type":"application/json; charset=utf-8"});
     res.write(JSON.stringify(zastepstwa));
