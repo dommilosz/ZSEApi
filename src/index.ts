@@ -8,6 +8,7 @@ export const config = configured({
     path: "config.json", writeMissing: true, defaultConfig: {
         indexUrl: "https://plan.zse.bydgoszcz.pl/lista.html",
         zastepstwaUrl: "https://zastepstwa.zse.bydgoszcz.pl/",
+        planyUrlBase: "https://plan.zse.bydgoszcz.pl/plany/o",
         httpPort:8080,
     }
 })
@@ -17,7 +18,7 @@ app.use(json({limit: '50mb'}));
 app.use(cors());
 
 app.listen(config.httpPort, () => {
-    console.log(`Example app listening on port ${config.httpPort}`)
+    console.log(`ZSEApi listening on port ${config.httpPort}`)
 })
 
 export let cache:{[key:string]:{fetched:number, data:string}} = {};
@@ -47,3 +48,6 @@ export async function getCachedParsed<T>(url:string, life:number, parser:(d:stri
 
 import "./getIndex"
 import "./getZastepstwa"
+import "./getPlany"
+import "./getSale"
+import "./getNauczyciele"

@@ -1,7 +1,6 @@
 import {app, config, getCachedParsed} from "./index";
 import {Request, Response} from "express";
 import {sendJSON} from "express-wsutils";
-
 const jsdom = require("jsdom");
 
 export type LekcjaType = {
@@ -10,16 +9,21 @@ export type LekcjaType = {
     nauczyciel:string
 }
 
-export type PlanyType = {
+export type PlanType = {
     // klasa { day { grupa { lekcje } } }
     // grupa:
     // "1", "2" jeżeli są dwie tego dnia
     // "*" jeżeli nie ma różnic
-    plany: {[key:string]:{[key:string]:{[key:string]:{lekcje:Array<LekcjaType>}}}}
+    plan: {[key:string]:{[key:string]:{[key:string]:{lekcje:Array<LekcjaType>}}}}
 }
 
-app.get("/api/plany", async (req:Request, res: Response) => {
-    let plany = await getCachedParsed(config.planyUrlBase + "" /*na podstawie /index będzie adres w pętli*/, 20 * 60 * 100, (data) => {
-        //TODO
+app.get("/api/plany/:planId", async (req:Request, res: Response) => {
+    console.log(`Got plan request for ${config.planyUrlBase + req.params.planId + ".html"}`)
+    let planType = await getCachedParsed<PlanType>(config.planyUrlBase + req.params.planId + ".html", 20 * 60 * 100, (data) => {
+        let planType:PlanType = {plan:{}}
+        const dom = new jsdom.JSDOM(data);
+        let document = dom.window.document;
+        return document;
     })
+    sendJSON(res, planType, 200)
 })
