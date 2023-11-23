@@ -8,7 +8,7 @@ export const config = configured({
     path: "config.json", writeMissing: true, defaultConfig: {
         indexUrl: "https://plan.zse.bydgoszcz.pl/lista.html",
         zastepstwaUrl: "https://zastepstwa.zse.bydgoszcz.pl/",
-        planyUrlBase: "https://plan.zse.bydgoszcz.pl/plany/o",
+        planyUrlBase: "https://plan.zse.bydgoszcz.pl/plany/",
         httpPort:8080,
     }
 })

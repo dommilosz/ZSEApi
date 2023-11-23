@@ -7,5 +7,5 @@ const jsdom = require("jsdom");
 
 export type NauczycieleType = {
     // nauczyciel { day { lekcje } }
-    plany: {[key:string]:{[key:string]:{lekcje:Array<LekcjaType>}}}
+    plan: {[key:string]:{[key:string]:{lekcje:Array<LekcjaType>}}}
 }

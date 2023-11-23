@@ -20,6 +20,7 @@
     "dependencies": {
         "@types/cors": "^2.8.13",
         "@types/express": "^4.17.15",
+        "@types/jsdom": "^21.1.6",
         "configuredjs": "^1.0.6",
         "cors": "^2.8.5",
         "express": "^4.18.2",
