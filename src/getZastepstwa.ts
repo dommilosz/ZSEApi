@@ -5,13 +5,15 @@ import {sendJSON} from "express-wsutils";
 const jsdom = require("jsdom");
 
 export type ZastepstwaType = {
+    timestamp: number,
     informations:string,
     zastepstwa: {[key:string]:{[key:string]:{[key:string]:{name:string, text:string, zastepca:string, sala:string}}}},
 }
 
 app.get("/api/zastepstwa", async (req: Request, res: Response) => {
     let zastepstwa = await getCachedParsed<ZastepstwaType>(config.zastepstwaUrl, 20 * 60 * 1000, (data) => {
-        let zastepstwa:ZastepstwaType = {informations:"", zastepstwa:{}};
+        let zastepstwa:ZastepstwaType = {informations:"", zastepstwa:{}, timestamp: 0};
+        zastepstwa.timestamp = Date.now();
 
         const dom = new jsdom.JSDOM(data);
         let document = dom.window.document;

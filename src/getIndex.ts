@@ -6,16 +6,17 @@ const jsdom = require("jsdom");
 const CssSelector = "body > h4 a"
 
 export type IndexType = {
+    timestamp: number,
     zastepstwaUrl: string,
     oddzialy:{name:string, url:string}[],
     nauczyciele:{name:string, url:string}[],
     sale:{name:string, url:string}[],
-
 }
 
 app.get("/api/index", async (req:Request,res:Response)=>{
     let index = await getCachedParsed<IndexType>(config.indexUrl,4*60*60*1000,(data)=>{
-        let index:IndexType = {nauczyciele: [], oddzialy: [], sale: [], zastepstwaUrl:""};
+        let index:IndexType = {nauczyciele: [], oddzialy: [], sale: [], zastepstwaUrl:"", timestamp: 0};
+        index.timestamp = Date.now();
 
         const dom = new jsdom.JSDOM(data);
         let document = dom.window.document;
