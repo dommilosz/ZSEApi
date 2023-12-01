@@ -15,8 +15,7 @@ export type IndexType = {
 
 app.get("/api/index", async (req:Request,res:Response)=>{
     let index = await getCachedParsed<IndexType>(config.indexUrl,4*60*60*1000,(data)=>{
-        let index:IndexType = {nauczyciele: [], oddzialy: [], sale: [], zastepstwaUrl:"", timestamp: 0};
-        index.timestamp = Date.now();
+        let index:IndexType = {nauczyciele: [], oddzialy: [], sale: [], zastepstwaUrl:"", timestamp: Date.now()};
 
         const dom = new jsdom.JSDOM(data);
         let document = dom.window.document;
