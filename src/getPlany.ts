@@ -54,12 +54,8 @@ app.get("/api/plany/:planId", async (req: Request, res: Response) => {
                     let salaEl = rowElement.querySelector('a.s')
                     let salaUrl = config.planyUrlBase + salaEl?.getAttribute('href')!
                     let sala = salaEl?.textContent!
-                    //console.log(`Lekcja ${hour} ${godziny}: ${tekst}`)
 
-                    console.log(typeof planType.plan)
                     let lekcjaType: LekcjaType = { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, nauczyciel: nauczyciel, nauczycielUrl: nauczycielUrl }
-                    console.log(weekday)
-                    console.log(grupa)
                     if (!planType.plan[weekday]) {
                         planType.plan[weekday] = {}
                     }
@@ -67,7 +63,6 @@ app.get("/api/plany/:planId", async (req: Request, res: Response) => {
                         planType.plan[weekday][grupa] = {}
                     }
                     planType.plan[weekday][grupa][hour] = lekcjaType
-                    // [klasa][weekday][grupa].lekcje.splice(hour, 0, { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, nauczyciel: nauczyciel, nauczycielUrl: nauczycielUrl})
                 }
             })
         })

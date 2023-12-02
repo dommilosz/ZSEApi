@@ -1,11 +1,21 @@
 import {app, config, getCachedParsed} from "./index";
 import {Request, Response} from "express";
 import {sendJSON} from "express-wsutils";
-import { LekcjaType } from "./getPlany";
-
 const jsdom = require("jsdom");
 
-export type NauczycieleType = {
-    // nauczyciel { day { lekcje } }
-    plan: {[key:string]:{[key:string]:{lekcje:Array<LekcjaType>}}}
+export type LekcjaType = {
+    name: string
+    godziny: string
+    sala: string
+    salaUrl: string
+    klasa: string
+    klasaUrl: string
+    grupa: string
+}
+
+export type NauczycielType = {
+    // { day { godzina { lekcje } } }
+    timestamp: number,
+    name: string, // klasa
+    plan: { [key: string]: { [key: string]: LekcjaType } }
 }
