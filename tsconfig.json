@@ -4,7 +4,8 @@
         "outDir": "dist",
         "esModuleInterop": true,
         "lib": [
-            "dom"
+            "dom",
+            "ES2021.String"
         ]
     },
     "include": [

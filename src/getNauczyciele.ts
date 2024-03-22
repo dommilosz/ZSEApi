@@ -6,10 +6,10 @@ const jsdom = require("jsdom");
 export type LekcjaType = {
     name: string
     godziny: string
-    sala: string
-    salaUrl: string
-    klasa: string
-    klasaUrl: string
+    sala: string | undefined
+    salaUrl: string | undefined
+    klasa: string | undefined
+    klasaUrl: string | undefined
     grupa: string
 }
 
@@ -19,3 +19,56 @@ export type NauczycielType = {
     name: string, // klasa
     plan: { [key: string]: { [key: string]: LekcjaType } }
 }
+
+app.get("/api/plany/n:planId", async (req: Request, res: Response) => {
+    let planType = await getCachedParsed<NauczycielType>(config.planyUrlBase + 'n' + req.params.planId, 20 * 60 * 100, (data) => {
+        let planType: NauczycielType = { name: "", plan: {}, timestamp: Date.now()}
+        const dom = new jsdom.JSDOM(data);
+        let document = dom.window.document;
+        let klasa = document.querySelector('.tytulnapis')?.textContent!.split(' ')[0]!;
+        planType.name = klasa
+        let table: HTMLTableElement = document.querySelector('.tabela')!
+        Array.from(table.rows).slice(1).forEach((rowElement, row_idx) => {
+            Array.from(rowElement.children).forEach((cell, idx, row) => {
+                if(idx >= 2 && cell.textContent?.trim()) {
+                    let tekst = cell.textContent
+
+                    let weekday = (idx - 2).toString() // 0..4
+                    let hour = parseInt(rowElement.querySelector('td.nr')?.textContent!)
+                    let godziny = rowElement.querySelector('td.g')?.textContent?.trim()!
+                    let lekcja = cell.querySelector('span.p')?.textContent!
+                    
+                    let klasaEl = cell.querySelector('a.o')
+                    let klasaSuf = klasaEl?.getAttribute('href')!;
+                    let klasaUrl = klasaSuf ? '/api/plany/' + klasaSuf : undefined
+                    let klasa = klasaEl?.textContent!
+
+                    let salaEl = cell.querySelector('a.s')
+                    let salaSuf = salaEl?.getAttribute('href')!;
+                    let salaUrl = salaSuf ? '/api/plany/' + salaSuf : undefined
+                    let sala = salaEl?.textContent!
+
+                    let grupa = "*"
+
+                    let stripped = cell.innerHTML.replaceAll(/<[^>]*>(.+?)<[^>]*>/g, "").replace('-', '').replace("<br>", '').trim();
+                    if (stripped.match(/\d\/\d/)) {
+                        grupa = stripped.split('/')[0];
+                    }
+
+                    let lekcjaType: LekcjaType = { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, klasa: klasa, klasaUrl: klasaUrl, grupa: grupa}
+                    if (!planType.plan[weekday]) {
+                        planType.plan[weekday] = {}
+                    }
+                    if (!planType.plan[weekday]) {
+                        planType.plan[weekday] = {}
+                    }
+                    planType.plan[weekday][hour] = lekcjaType
+                }
+            })
+        })
+        
+        //planType.plan[klasa]
+        return planType;
+    })
+    sendJSON(res, planType, 200)
+})

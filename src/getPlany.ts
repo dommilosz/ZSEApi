@@ -6,10 +6,10 @@ import jsdom from "jsdom";
 export type LekcjaType = {
     name: string
     godziny: string
-    sala: string
-    salaUrl: string
-    nauczyciel: string
-    nauczycielUrl: string
+    sala: string | undefined
+    salaUrl: string | undefined
+    nauczyciel: string | undefined
+    nauczycielUrl: string | undefined
 }
 
 export type PlanType = {
@@ -22,8 +22,8 @@ export type PlanType = {
     plan: { [key: string]: { [key: string]: { [key: string]: LekcjaType } } }
 }
 
-app.get("/api/plany/:planId", async (req: Request, res: Response) => {
-    let planType = await getCachedParsed<PlanType>(config.planyUrlBase + req.params.planId, 20 * 60 * 100, (data) => {
+app.get("/api/plany/o:planId", async (req: Request, res: Response) => {
+    let planType = await getCachedParsed<PlanType>(config.planyUrlBase + 'o' + req.params.planId, 20 * 60 * 100, (data) => {
         let planType: PlanType = { name: "", plan: {}, timestamp: Date.now()}
         const dom = new jsdom.JSDOM(data);
         let document = dom.window.document;
@@ -37,9 +37,9 @@ app.get("/api/plany/:planId", async (req: Request, res: Response) => {
 
                     let weekday = (idx - 2).toString() // 0..4
                     let hour = parseInt(rowElement.querySelector('td.nr')?.textContent!)
-                    let godziny = rowElement.querySelector('td.g')?.textContent!
-                    let lekcja = rowElement.querySelector('span.p')?.textContent!
-                    
+                    let godziny = rowElement.querySelector('td.g')?.textContent?.trim()!
+                    let lekcja = cell.querySelector('span.p')?.textContent!
+
                     let arr_help = lekcja?.split('-')
                     let grupa = "*"
                     if(arr_help?.length! > 1) {
@@ -47,12 +47,15 @@ app.get("/api/plany/:planId", async (req: Request, res: Response) => {
                         lekcja = arr_help[0]
                     }
                     
-                    let nauczycielEl = rowElement.querySelector('a.n')
-                    let nauczycielUrl = config.planyUrlBase + nauczycielEl?.getAttribute('href')!
+
+                    let nauczycielEl = cell.querySelector('a.n')
+                    let nauczycielSuf = nauczycielEl?.getAttribute('href')!;
+                    let nauczycielUrl = nauczycielSuf ? '/api/plany/' + nauczycielSuf : undefined;
                     let nauczyciel = nauczycielEl?.textContent!
 
-                    let salaEl = rowElement.querySelector('a.s')
-                    let salaUrl = config.planyUrlBase + salaEl?.getAttribute('href')!
+                    let salaEl = cell.querySelector('a.s')
+                    let salaSuf = salaEl?.getAttribute('href')!;
+                    let salaUrl = salaSuf ? '/api/plany/' + salaSuf : undefined
                     let sala = salaEl?.textContent!
 
                     let lekcjaType: LekcjaType = { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, nauczyciel: nauczyciel, nauczycielUrl: nauczycielUrl }
