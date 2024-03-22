@@ -1,6 +1,7 @@
 import {app, config, getCachedParsed} from "./index";
 import {Request, Response} from "express";
 import {sendJSON} from "express-wsutils";
+import { getIndex } from "./getIndex";
 const jsdom = require("jsdom");
 
 export type LekcjaType = {
@@ -71,4 +72,9 @@ app.get("/api/plany/n:planId", async (req: Request, res: Response) => {
         return planType;
     })
     sendJSON(res, planType, 200)
+})
+
+app.get("/api/nauczyciele/", async (req: Request, res: Response) => {
+    let index = await getIndex(req, res);
+    sendJSON(res, { nauczyciele: index.nauczyciele }, 200)
 })

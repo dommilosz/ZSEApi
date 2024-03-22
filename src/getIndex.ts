@@ -13,7 +13,7 @@ export type IndexType = {
     sale:{name:string, url:string}[],
 }
 
-app.get("/api/index", async (req:Request,res:Response)=>{
+export async function getIndex(req:Request,res:Response) {
     let index = await getCachedParsed<IndexType>(config.indexUrl,4*60*60*1000,(data)=>{
         let index:IndexType = {nauczyciele: [], oddzialy: [], sale: [], zastepstwaUrl:"", timestamp: Date.now()};
 
@@ -51,5 +51,10 @@ app.get("/api/index", async (req:Request,res:Response)=>{
         }
         return index;
     });
+    return index;
+}
+
+app.get("/api/index", async (req:Request,res:Response)=>{
+    let index = getIndex(req, res);
     sendJSON(res, index, 200);
 })
