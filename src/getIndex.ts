@@ -31,11 +31,11 @@ export async function getIndex(req:Request,res:Response) {
                 let objects = element.querySelectorAll("a");
                 for (let object of objects){
                     let name:string = object.innerHTML;
-                    let href:string = object.href;
+                    let href:string = '/api/' + object.href;
 
-                    if(!href.startsWith("http")){
-                        href = domain +"/"+ href;
-                    }
+                    // if(!href.startsWith("http")){
+                    //     href = domain +"/"+ href;
+                    // }
 
                     if(header === "Oddziały"){
                         index.oddzialy.push({name:name,url:href})
@@ -55,6 +55,6 @@ export async function getIndex(req:Request,res:Response) {
 }
 
 app.get("/api/index", async (req:Request,res:Response)=>{
-    let index = getIndex(req, res);
+    let index = await getIndex(req, res);
     sendJSON(res, index, 200);
 })
