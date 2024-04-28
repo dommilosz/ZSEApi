@@ -11,6 +11,7 @@ export type LekcjaType = {
     salaUrl: string | undefined
     nauczyciel: string | undefined
     nauczycielUrl: string | undefined
+    grupa: string
 }
 
 export type PlanType = {
@@ -20,7 +21,7 @@ export type PlanType = {
     // "*" jeżeli nie ma różnic
     timestamp: number,
     name: string, // klasa
-    plan: { [key: string]: { [key: string]: { [key: string]: LekcjaType } } }
+    plan: { [key: string]: { [key: string]: LekcjaType[] } }
 }
 
 app.get("/api/plany/o:planId", async (req: Request, res: Response) => {
@@ -59,14 +60,15 @@ app.get("/api/plany/o:planId", async (req: Request, res: Response) => {
                     let salaUrl = salaSuf ? '/api/plany/' + salaSuf : undefined
                     let sala = salaEl?.textContent!
 
-                    let lekcjaType: LekcjaType = { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, nauczyciel: nauczyciel, nauczycielUrl: nauczycielUrl }
+                    let lekcjaType: LekcjaType = { name: lekcja, godziny: godziny, sala: sala, salaUrl: salaUrl, nauczyciel: nauczyciel, nauczycielUrl: nauczycielUrl, grupa: grupa }
                     if (!planType.plan[weekday]) {
                         planType.plan[weekday] = {}
                     }
-                    if (!planType.plan[weekday][grupa]) {
-                        planType.plan[weekday][grupa] = {}
+                    if(!planType.plan[weekday][hour]) {
+                        planType.plan[weekday][hour] = [lekcjaType];
+                    } else {
+                        planType.plan[weekday][hour].push(lekcjaType);
                     }
-                    planType.plan[weekday][grupa][hour] = lekcjaType
                 }
             })
         })

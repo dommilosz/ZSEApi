@@ -18,7 +18,7 @@ export type SalaType = {
     // { day { godzina { lekcje } } }
     timestamp: number,
     name: string, // klasa
-    plan: { [key: string]: { [key: string]: LekcjaType } }
+    plan: { [key: string]: { [key: string]: LekcjaType[] } }
 }
 
 app.get("/api/plany/s:planId", async (req: Request, res: Response) => {
@@ -61,10 +61,11 @@ app.get("/api/plany/s:planId", async (req: Request, res: Response) => {
                     if (!planType.plan[weekday]) {
                         planType.plan[weekday] = {}
                     }
-                    if (!planType.plan[weekday]) {
-                        planType.plan[weekday] = {}
+                    if(!planType.plan[weekday][hour]) {
+                        planType.plan[weekday][hour] = [lekcjaType];
+                    } else {
+                        planType.plan[weekday][hour].push(lekcjaType);
                     }
-                    planType.plan[weekday][hour] = lekcjaType
                 }
             })
         })
